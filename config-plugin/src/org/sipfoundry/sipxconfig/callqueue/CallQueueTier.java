@@ -16,8 +16,8 @@ public class CallQueueTier implements Serializable {
 
     private Integer m_callQueueAgentId;
     private Integer m_callQueueId;
-    private Integer m_position = 0;
-    private Integer m_level = 0;
+    private Integer m_position = 1;
+    private Integer m_level = 1;
 
     public void setCallQueueAgentId(Integer callQueueAgentId) {
         m_callQueueAgentId = callQueueAgentId;
