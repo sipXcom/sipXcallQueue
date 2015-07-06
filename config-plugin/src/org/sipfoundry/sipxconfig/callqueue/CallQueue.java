@@ -50,10 +50,17 @@ public class CallQueue extends CallQueueExtension implements SystemAuditable {
         }
         Set<FreeswitchAction> actions = new LinkedHashSet<FreeswitchAction>();
         actions.add(createAction(SET, "hangup_after_bridge=true"));
+
         String name = getName();
         if (StringUtils.isNotBlank(name)) {
             actions.add(createAction(SET, "cc_outbound_cid_name_prefix=" + String.format(QUEUE_NAME, name)));
         }
+
+        String breakAwayDigit = (String) getSettingTypedValue("call-queue/breakaway-digit");
+        if (StringUtils.isNotBlank(breakAwayDigit)) {
+            actions.add(createAction(SET, "cc_exit_keys=" + breakAwayDigit));
+        }
+
         boolean answered = false;
         String welcomeAudio = (String) getSettingTypedValue("call-queue/welcome-audio");
         if (null != welcomeAudio) {
