@@ -9,12 +9,15 @@
 
 package org.sipfoundry.sipxconfig.callqueue;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.sipfoundry.sipxconfig.branch.Branch;
 import org.sipfoundry.sipxconfig.freeswitch.FreeswitchAction;
 import org.sipfoundry.sipxconfig.freeswitch.FreeswitchCondition;
 import org.sipfoundry.sipxconfig.setting.AbstractSettingVisitor;
@@ -31,6 +34,7 @@ public class CallQueue extends CallQueueExtension implements SystemAuditable {
     private static final String DELIM = "/";
     private String m_promptsDirectory;
     private String m_mohDirectory;
+    private Set<Branch> m_locations = new HashSet<Branch>();
 
     public void setPromptsDirectory(String promptsDirectory) {
         m_promptsDirectory = promptsDirectory;
@@ -38,6 +42,23 @@ public class CallQueue extends CallQueueExtension implements SystemAuditable {
 
     public void setMohDirectory(String mohDirectory) {
         m_mohDirectory = mohDirectory;
+    }
+
+    public Set<Branch> getLocations() {
+        return m_locations;
+    }
+
+    public void setLocations(Set<Branch> locations) {
+        m_locations = locations;
+    }
+
+    public List<Branch> getLocationsList() {
+        return new ArrayList<Branch>(m_locations);
+    }
+
+    public void setLocationsList(List<Branch> locations) {
+        m_locations.clear();
+        m_locations.addAll(locations);
     }
 
     /* Set extension handling for CallQueue */

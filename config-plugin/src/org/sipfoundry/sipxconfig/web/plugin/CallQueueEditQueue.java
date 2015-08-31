@@ -15,8 +15,11 @@ import org.apache.tapestry.annotations.InjectObject;
 import org.apache.tapestry.annotations.Persist;
 import org.apache.tapestry.event.PageBeginRenderListener;
 import org.apache.tapestry.event.PageEvent;
+import org.apache.tapestry.form.IPropertySelectionModel;
 
 /*sipXecs WEB components API imports */
+import org.sipfoundry.sipxconfig.branch.BranchManager;
+import org.sipfoundry.sipxconfig.components.ObjectSelectionModel;
 import org.sipfoundry.sipxconfig.components.PageWithCallback;
 import org.sipfoundry.sipxconfig.components.SipxValidationDelegate;
 import org.sipfoundry.sipxconfig.components.TapestryUtils;
@@ -44,7 +47,17 @@ public abstract class CallQueueEditQueue extends PageWithCallback implements Pag
     @Bean
     public abstract SipxValidationDelegate getValidator();
 
+    @InjectObject("spring:branchManager")
+    public abstract BranchManager getBranchManager();
+
     /*  Methods */
+
+    public IPropertySelectionModel getLocationsModel() {
+        ObjectSelectionModel model = new ObjectSelectionModel();
+        model.setCollection(getBranchManager().getBranches());
+        model.setLabelExpression("name");
+        return model;
+    }
 
     public void pageBeginRender(PageEvent event) {
         if (!TapestryUtils.isValid(this)) {
