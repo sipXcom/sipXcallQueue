@@ -11,12 +11,15 @@ package org.sipfoundry.sipxconfig.callqueue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.sipfoundry.commons.mongo.MongoConstants;
 import org.sipfoundry.sipxconfig.branch.Branch;
 import org.sipfoundry.sipxconfig.freeswitch.FreeswitchAction;
 import org.sipfoundry.sipxconfig.freeswitch.FreeswitchCondition;
@@ -216,5 +219,16 @@ public class CallQueue extends CallQueueExtension implements SystemAuditable {
     @Override
     public String getConfigChangeType() {
         return CallQueue.class.getSimpleName();
+    }
+
+    @Override
+    public Map<String, Object> getMongoProperties(String domain) {
+        Map<String, Object> props = new HashMap<String, Object>();
+        List<String> locations = new ArrayList<String>();
+        for (Branch branch : m_locations) {
+            locations.add(branch.getName());
+        }
+        props.put(MongoConstants.LOCATIONS, locations);
+        return props;
     }
 }
