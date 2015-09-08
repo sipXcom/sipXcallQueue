@@ -27,8 +27,9 @@ import org.sipfoundry.sipxconfig.components.TapestryUtils;
 /*sipXecs WEB settings API imports */
 import org.sipfoundry.sipxconfig.callqueue.CallQueue;
 import org.sipfoundry.sipxconfig.callqueue.CallQueueContext;
+import org.sipfoundry.sipxconfig.site.branch.LocationsAware;
 
-public abstract class CallQueueEditQueue extends PageWithCallback implements PageBeginRenderListener {
+public abstract class CallQueueEditQueue extends PageWithCallback implements PageBeginRenderListener, LocationsAware {
     public static final String PAGE = "plugin/CallQueueEditQueue";
 
     /* Properties */
@@ -101,5 +102,9 @@ public abstract class CallQueueEditQueue extends PageWithCallback implements Pag
         context.saveCallQueue(callQueue);
         Integer id = getCallQueue().getId();
         setCallQueueId(id);
+    }
+
+    public void setFeatureId(Integer featureId) {
+        setCallQueueId(featureId);
     }
 }
