@@ -21,7 +21,6 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.sipfoundry.commons.mongo.MongoConstants;
 import org.sipfoundry.sipxconfig.branch.Branch;
-import org.sipfoundry.sipxconfig.branch.BranchUtils;
 import org.sipfoundry.sipxconfig.freeswitch.FreeswitchAction;
 import org.sipfoundry.sipxconfig.freeswitch.FreeswitchCondition;
 import org.sipfoundry.sipxconfig.setting.AbstractSettingVisitor;
@@ -225,7 +224,11 @@ public class CallQueue extends CallQueueExtension implements SystemAuditable {
     @Override
     public Map<String, Object> getMongoProperties(String domain) {
         Map<String, Object> props = new HashMap<String, Object>();
-        props.put(MongoConstants.LOCATIONS, BranchUtils.getLocationsToReplicate(m_locations));
+        List<String> locations = new ArrayList<String>();
+        for (Branch branch : m_locations) {
+            locations.add(branch.getName());
+        }
+        props.put(MongoConstants.LOCATIONS, locations);
         return props;
     }
 }
