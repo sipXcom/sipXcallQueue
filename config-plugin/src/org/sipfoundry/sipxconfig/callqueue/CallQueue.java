@@ -27,7 +27,8 @@ public class CallQueue extends CallQueueExtension implements SystemAuditable {
     private static final String SET = "set";
     private static final String RECORD_DIR = "call-queue/record-calls-directory";
     private static final String PLAYBACK = "playback";
-    private static final String QUEUE_NAME = "(%s) - ";
+    private static final String QUEUE_NAME = "${lua(~stream:write(&quot;(%s) - &quot; .. " +
+    		"string.gsub(session:getVariable(&quot;caller_id_name&quot;), &quot;/&quot;, &quot;-&quot;)))}";
     private static final String DELIM = "/";
     private String m_promptsDirectory;
     private String m_mohDirectory;
@@ -53,7 +54,7 @@ public class CallQueue extends CallQueueExtension implements SystemAuditable {
 
         String name = getName();
         if (StringUtils.isNotBlank(name)) {
-            actions.add(createAction(SET, "cc_outbound_cid_name_prefix=" + String.format(QUEUE_NAME, name)));
+            actions.add(createAction(SET, "effective_caller_id_name=" + String.format(QUEUE_NAME, name)));
         }
 
         String breakAwayDigit = (String) getSettingTypedValue("call-queue/breakaway-digit");
