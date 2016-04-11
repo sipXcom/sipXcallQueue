@@ -25,6 +25,7 @@ import org.sipfoundry.sipxconfig.freeswitch.FreeswitchAction;
 import org.sipfoundry.sipxconfig.freeswitch.FreeswitchCondition;
 import org.sipfoundry.sipxconfig.setting.AbstractSettingVisitor;
 import org.sipfoundry.sipxconfig.setting.Setting;
+import org.sipfoundry.sipxconfig.setting.ValueStorage;
 import org.sipfoundry.sipxconfig.setting.type.FileSetting;
 import org.sipfoundry.sipxconfig.setting.type.SettingType;
 import org.sipfoundry.sipxconfig.systemaudit.SystemAuditable;
@@ -128,8 +129,11 @@ public class CallQueue extends CallQueueExtension implements SystemAuditable {
     }
 
     public void copySettingsTo(CallQueue dst) {
+        dst.setExtension(getExtension() + CallQueueContextImpl.COPIED);
         // Copy bean settings
-        dst.setSettings(getSettings());
+        ValueStorage valueStorage = (ValueStorage) getValueStorage();
+        ValueStorage clonedValueStorage = valueStorage.duplicateDeep();
+        dst.setValueStorage(clonedValueStorage);
     }
 
     public String getStrategy() {

@@ -20,12 +20,14 @@ import org.sipfoundry.sipxconfig.freeswitch.FreeswitchFeature;
 import org.sipfoundry.sipxconfig.setting.BeanWithSettings;
 import org.sipfoundry.sipxconfig.setting.Setting;
 import org.sipfoundry.sipxconfig.setting.SettingEntry;
+import org.sipfoundry.sipxconfig.setting.ValueStorage;
 import org.sipfoundry.sipxconfig.systemaudit.SystemAuditable;
 import org.springframework.beans.factory.annotation.Required;
 
 public class CallQueueAgent extends BeanWithSettings implements DeployConfigOnEdit, SystemAuditable {
 
     private static String s_callTimeout = "call-queue-agent/call-timeout";
+    private static String STATUS = "call-queue-agent/status";
     private String m_name;
     private String m_extension;
     private String m_description;
@@ -179,7 +181,11 @@ public class CallQueueAgent extends BeanWithSettings implements DeployConfigOnEd
         m_tiers.copyTiersTo(newTiers.getTiers());
         dst.setTiers(newTiers);
         // Copy bean settings
-        dst.setSettings(getSettings());
+        ValueStorage valueStorage = (ValueStorage) getValueStorage();
+        ValueStorage clonedValueStorage = valueStorage.duplicateDeep();
+        // the agent status is the agent status and not meant to be copied
+        clonedValueStorage.revertSettingToDefault(dst.getSettings().getSetting(STATUS));
+        dst.setValueStorage(clonedValueStorage);
     }
     @Override
     public String getEntityIdentifier() {

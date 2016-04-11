@@ -53,16 +53,17 @@ public class CallQueueContextImpl extends SipxHibernateDaoSupport implements Cal
         FeatureProvider {
 
     private static final String QUERY_CALL_QUEUE_EXTENSIONS_WITH_NAMES = "callQueueExtensionWithName";
+    private static final String QUERY_CALL_QUEUE_AGENT_WITH_NAME_OR_EXT = "callQueueAgentIds";
     private static final String QUERY_PARAM_VALUE = "value";
     private static final String QUERY_PARAM_AGENT_ID = "callqueueagentid";
     private static final String QUERY_PARAM_QUEUE_ID = "callqueueid";
-    private static final String COPY_OF = "Copy of";
-    private static final String COPIED = "(Copied)";
+    private static final String COPY_OF = "Copy of ";
+    protected static final String COPIED = " (Copied)";
 
     private static final String ALIAS = "alias";
     private static final String EXTENSION = "extension";
     private static final String DID = "did";
-    private static final String QUEUE_NAME = CALL_QUEUE;
+    private static final String QUEUE_NAME = "&" + CALL_QUEUE;
 
     private BeanFactory m_beanFactory;
     private AliasManager m_aliasManager;
@@ -261,7 +262,7 @@ public class CallQueueContextImpl extends SipxHibernateDaoSupport implements Cal
                 newCallQueue.setDescription(srcCallQueue.getDescription() + COPIED);
             }
             srcCallQueue.copySettingsTo(newCallQueue);
-            getHibernateTemplate().saveOrUpdate(newCallQueue);
+            saveCallQueue(newCallQueue);
         }
         m_reloadQueues = true;
     }
@@ -337,15 +338,29 @@ public class CallQueueContextImpl extends SipxHibernateDaoSupport implements Cal
         return callqueueagent;
     }
 
+    public CallQueueAgent getAgentByName(String agentName) {
+        List<CallQueueAgent> clients = getHibernateTemplate().findByNamedQueryAndNamedParam(
+                QUERY_CALL_QUEUE_AGENT_WITH_NAME_OR_EXT, QUERY_PARAM_VALUE, agentName);
+        return DataAccessUtils.singleResult(clients);
+    }
+
+    private boolean checkForDuplicateAgentName(CallQueueAgent callQueueAgent) {
+        String name = callQueueAgent.getName();
+        CallQueueAgent existingClient = getAgentByName(name);
+        if (existingClient != null && !existingClient.getId().equals(callQueueAgent.getId())) {
+            return false;
+        }
+        return true;
+    }
+
     public void saveCallQueueAgent(CallQueueAgent callQueueAgent) { // Tested
         // Check for duplicate names and extensions before saving the call queue
-        String name = callQueueAgent.getName();
         final String callQueueAgentTypeName = "&label.callQueueAgent";
-        if (!m_aliasManager.canObjectUseAlias(callQueueAgent, name)) {
-            throw new NameInUseException(callQueueAgentTypeName, name);
+        if (!checkForDuplicateAgentName(callQueueAgent)) {
+            throw new NameInUseException(callQueueAgentTypeName, callQueueAgent.getName());
         }
-        boolean isNew = callQueueAgent.isNew();
         List<Integer> queuesBefore = new ArrayList<Integer>();
+        boolean isNew = callQueueAgent.isNew();
         if (!isNew) {
             queuesBefore = getCallQueueIds(callQueueAgent.getId());
         }
@@ -366,8 +381,7 @@ public class CallQueueContextImpl extends SipxHibernateDaoSupport implements Cal
 
     public void duplicateCallQueueAgents(Collection<Integer> ids) { // Tested
         for (Integer id : ids) {
-            CallQueueAgent srcCallQueueAgent = (CallQueueAgent) getHibernateTemplate()
-                    .load(CallQueueAgent.class, id);
+            CallQueueAgent srcCallQueueAgent = loadCallQueueAgent(id);
             CallQueueAgent newCallQueueAgent = newCallQueueAgent();
             // TODO: localize strings
             newCallQueueAgent.setName(COPY_OF + srcCallQueueAgent.getName());
@@ -375,7 +389,7 @@ public class CallQueueContextImpl extends SipxHibernateDaoSupport implements Cal
                 newCallQueueAgent.setDescription(srcCallQueueAgent.getDescription() + COPIED);
             }
             srcCallQueueAgent.copySettingsTo(newCallQueueAgent);
-            getHibernateTemplate().saveOrUpdate(newCallQueueAgent);
+            saveCallQueueAgent(newCallQueueAgent);
             m_fsDeployer.deployAgent(newCallQueueAgent, true);
         }
     }
