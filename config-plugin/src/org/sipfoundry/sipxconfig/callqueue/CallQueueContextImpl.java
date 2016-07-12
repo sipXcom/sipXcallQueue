@@ -364,7 +364,11 @@ public class CallQueueContextImpl extends SipxHibernateDaoSupport implements Cal
         if (!isNew) {
             queuesBefore = getCallQueueIds(callQueueAgent.getId());
         }
-        getHibernateTemplate().saveOrUpdate(callQueueAgent);
+        if (isNew) {
+            getHibernateTemplate().save(callQueueAgent);
+        } else {
+            getHibernateTemplate().merge(callQueueAgent);
+        }
         getHibernateTemplate().flush();
         List<Integer> queuesAfter = getCallQueueIds(callQueueAgent.getId());
         Collection<Integer> queuesToReload = CollectionUtils.union(queuesBefore, queuesAfter);
