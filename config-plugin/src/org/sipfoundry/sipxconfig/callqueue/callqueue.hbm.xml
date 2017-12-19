@@ -49,7 +49,7 @@
   </query>
 
   <query name="callQueueAgentIds">
-    <![CDATA[select agent.id from CallQueueAgent agent where agent.name = :value or agent.extension = :value]]>
+    <![CDATA[from CallQueueAgent agent where agent.name = :value or agent.extension = :value]]>
   </query>
 
 </hibernate-mapping>

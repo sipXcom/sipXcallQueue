@@ -77,4 +77,10 @@
     <property name="featureId" value="callqueue"/>
   </bean>
 
+  <bean id="callQueueEditPageProviderPlugin" class="org.sipfoundry.sipxconfig.web.plugin.CallQueueEditPageProviderPlugin"/> 
+
+  <bean id="callQueueSubscribeToPresence" class="org.sipfoundry.sipxconfig.callqueue.CallQueueSubscribeToPresence">
+    <property name="callQueueContext" ref="callQueueContext"/>
+  </bean>
+
 </beans>

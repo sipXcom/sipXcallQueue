@@ -40,9 +40,6 @@ public abstract class CallQueueAgentsPanel extends BaseComponent {
     @InitialValue(value = "literal:agents")
     public abstract String getTab();
 
-    @Bean
-    public abstract SipxValidationDelegate getValidator();
-
     @InjectObject("spring:callQueueContext")
     public abstract CallQueueContext getCallQueueContext();
 
