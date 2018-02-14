@@ -55,7 +55,6 @@
   <bean id="callQueue" class="org.sipfoundry.sipxconfig.callqueue.CallQueue" scope="prototype">
     <property name="modelFilesContext" ref="modelFilesContext"/>
     <property name="addressManager" ref="addressManager"/>
-    <property name="mohDirectory" value="${sysdir.vxml.moh}" />
     <property name="promptsDirectory" value="${sysdir.vxml.prompts}" />
   </bean>
 

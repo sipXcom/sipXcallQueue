@@ -38,15 +38,10 @@ public class CallQueue extends CallQueueExtension implements SystemAuditable {
     		"string.gsub(session:getVariable(&quot;caller_id_name&quot;), &quot;/&quot;, &quot;-&quot;)))}";
     private static final String DELIM = "/";
     private String m_promptsDirectory;
-    private String m_mohDirectory;
     private Set<Branch> m_locations = new HashSet<Branch>();
 
     public void setPromptsDirectory(String promptsDirectory) {
         m_promptsDirectory = promptsDirectory;
-    }
-
-    public void setMohDirectory(String mohDirectory) {
-        m_mohDirectory = mohDirectory;
     }
 
     public Set<Branch> getLocations() {
@@ -143,7 +138,7 @@ public class CallQueue extends CallQueueExtension implements SystemAuditable {
     public String getMohSound() {
         String mohSound = (String) getSettingTypedValue("call-queue/moh-sound");
         if (StringUtils.isNotEmpty(mohSound)) {
-            return m_mohDirectory + DELIM + mohSound;
+            return m_promptsDirectory + DELIM + mohSound; 
         }
         return StringUtils.EMPTY;
     }
@@ -190,8 +185,7 @@ public class CallQueue extends CallQueueExtension implements SystemAuditable {
 
     @Override
     public void setSettings(Setting settings) {
-        settings.acceptVisitor(new AudioDirectorySetter(m_promptsDirectory, "welcome-audio", "goodbye-audio"));
-        settings.acceptVisitor(new AudioDirectorySetter(m_mohDirectory, "moh-sound"));
+        settings.acceptVisitor(new AudioDirectorySetter(m_promptsDirectory, "welcome-audio", "goodbye-audio", "moh-sound"));
         super.setSettings(settings);
     }
 
