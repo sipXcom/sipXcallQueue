@@ -72,7 +72,7 @@
   </bean>
 
   <bean id="callqueueHook" class="org.sipfoundry.sipxconfig.site.SimplePluginHook">
-    <property name="hookId" value="CallQueueHook"/>
+    <property name="hookId" value="CallAQueueHook"/>
     <property name="featureId" value="callqueue"/>
   </bean>
 

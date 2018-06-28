@@ -11,5 +11,5 @@ import org.apache.tapestry.html.BasePage;
 /**
  * Tapestry 4 page, for dynamic code behind your menu links, should you need any.
  */
-public abstract class CallQueueHook extends BasePage {
+public abstract class CallAQueueHook extends BasePage {
 }
