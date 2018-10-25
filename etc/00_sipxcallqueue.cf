@@ -17,7 +17,7 @@ bundle agent 00_sipxcallqueue {
   vars:    
     any::
       "conf_file" string => "callcenter.conf.xml";
-      "conf_path" string => "$(sipx.SIPX_FSCONFDIR)/freeswitch/conf/autoload_configs/$(conf_file)";
+      "conf_path" string => "$(sipx.SIPX_FSCONFDIR)/conf/autoload_configs/$(conf_file)";
 
   files:
     !callqueue::
