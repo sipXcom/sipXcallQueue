@@ -72,6 +72,11 @@ public class CallQueue extends CallQueueExtension implements SystemAuditable {
         Set<FreeswitchAction> actions = new LinkedHashSet<FreeswitchAction>();
         actions.add(createAction(SET, "hangup_after_bridge=true"));
 
+        if (getBypassMedia()) {
+            actions.add(createAction(SET, "bypass_media=true"));
+        }
+
+
         String name = getName();
         if (StringUtils.isNotBlank(name)) {
             actions.add(createAction(SET, "effective_caller_id_name=" + String.format(QUEUE_NAME, name)));
@@ -133,6 +138,10 @@ public class CallQueue extends CallQueueExtension implements SystemAuditable {
 
     public String getStrategy() {
         return (String) getSettingTypedValue("call-queue/strategy");
+    }
+
+    public Boolean getBypassMedia() {
+        return (Boolean) getSettingTypedValue("call-queue/bypass-media");
     }
 
     public String getMohSound() {

@@ -44,6 +44,7 @@
 </type>
     <group name="call-queue">
 	<setting name="strategy"><type refid="type_strategy"/><value>ring-all</value></setting>
+    <setting name="bypass-media"><type><boolean/></type><value>0</value></setting>
 	<setting name="welcome-audio"><type refid="type_upload-music"/></setting>
 	<setting name="goodbye-audio"><type refid="type_upload-music"/></setting>
 	<setting name="moh-sound"><type refid="type_upload-music"/></setting>
