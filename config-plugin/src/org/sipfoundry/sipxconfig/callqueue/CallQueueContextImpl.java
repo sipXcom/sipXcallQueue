@@ -19,12 +19,16 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.Query;
 import org.sipfoundry.sipxconfig.alias.AliasManager;
 import org.sipfoundry.sipxconfig.cfgmgt.ConfigManager;
 import org.sipfoundry.sipxconfig.cfgmgt.ConfigRequest;
 import org.sipfoundry.sipxconfig.cfgmgt.ConfigUtils;
 import org.sipfoundry.sipxconfig.common.BeanId;
+import org.sipfoundry.sipxconfig.common.DaoUtils;
 import org.sipfoundry.sipxconfig.common.ExtensionInUseException;
 import org.sipfoundry.sipxconfig.common.NameInUseException;
 import org.sipfoundry.sipxconfig.common.Replicable;
@@ -72,9 +76,11 @@ public class CallQueueContextImpl extends SipxHibernateDaoSupport implements Cal
     private ReplicationManager m_replicationManager;
     private CallQueueDeployer m_fsDeployer;
 
+    private static final Log LOG = LogFactory.getLog(CallQueueContextImpl.class);
+    
     // TODO load only queues and agents that were changed
     private boolean m_reloadQueues;
-
+    
     public void setBeanFactory(BeanFactory beanFactory) {
         m_beanFactory = beanFactory;
     }
@@ -251,6 +257,14 @@ public class CallQueueContextImpl extends SipxHibernateDaoSupport implements Cal
     public CallQueue loadCallQueue(Integer id) { // Tested
         return (CallQueue) getHibernateTemplate().load(CallQueue.class, id);
     }
+    
+    @Override
+    public CallQueue getCallQueueByName(String name) {
+        String query = "from CallQueue c where c.name = :name";
+        List<CallQueue> queueList = getHibernateTemplate().findByNamedParam(query, "name", name);
+
+        return DaoUtils.requireOneOrZero(queueList, query);
+    }    
 
     public void duplicateCallQueues(Collection<Integer> ids) { // Tested
         for (Integer id : ids) {
@@ -277,6 +291,17 @@ public class CallQueueContextImpl extends SipxHibernateDaoSupport implements Cal
             getHibernateTemplate().delete(queue);
             m_fsDeployer.deleteQueue(extension);
         }
+    }
+    
+    @Required
+    public void deleteCallQueue(String name) {
+        if (StringUtils.isEmpty(name)) {
+            return;
+        }
+        CallQueue queue = getCallQueueByName(name);
+        String extension = queue.getExtension();
+        getHibernateTemplate().delete(queue);
+        m_fsDeployer.deleteQueue(extension);
     }
 
     public Collection<CallQueue> getCallQueues() { // Test

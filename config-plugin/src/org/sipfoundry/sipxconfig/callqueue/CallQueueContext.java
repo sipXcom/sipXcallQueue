@@ -52,6 +52,8 @@ public interface CallQueueContext extends FreeswitchExtensionProvider, AliasOwne
 
     /* CallQueue API */
     CallQueue loadCallQueue(Integer id);
+    
+    CallQueue getCallQueueByName(String name); 
 
     void saveCallQueue(CallQueue callQueue);
 
@@ -60,6 +62,8 @@ public interface CallQueueContext extends FreeswitchExtensionProvider, AliasOwne
     void duplicateCallQueues(Collection<Integer> ids);
 
     void deleteCallQueues(Collection<Integer> ids);
+    
+    void deleteCallQueue(String name);
 
     Collection<CallQueue> getCallQueues();
 

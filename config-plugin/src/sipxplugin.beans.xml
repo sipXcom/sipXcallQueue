@@ -3,8 +3,17 @@
   - See springframework documentation for proper syntax.
   -   http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/beans.html
   -->
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+<beans xmlns="http://www.springframework.org/schema/beans" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+  					  http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
+  					  
+   <jaxrs:server id="callqueueService" address="/callqueue">
+      <jaxrs:serviceBeans>
+         <ref bean="callqueueApi"/>
+      </jaxrs:serviceBeans>
+   </jaxrs:server>					  
 
    <bean id="callQueueHibernate" class="org.sipfoundry.sipxconfig.common.HibernateConfigurationPlugin">
     <property name="mappingResources">
@@ -80,6 +89,11 @@
 
   <bean id="callQueueSubscribeToPresence" class="org.sipfoundry.sipxconfig.callqueue.CallQueueSubscribeToPresence">
     <property name="callQueueContext" ref="callQueueContext"/>
+  </bean>
+  
+  <bean class="org.sipfoundry.sipxconfig.callqueue.api.CallQueueApiImpl" id="callqueueApi">
+     <property name="callQueueContext" ref="callQueueContext" />
+     <property name="branchManager" ref="branchManager" />
   </bean>
 
 </beans>
