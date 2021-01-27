@@ -1,10 +1,23 @@
 package org.sipfoundry.sipxconfig.callqueue.api;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+import org.sipfoundry.sipxconfig.api.model.SettingsList;
+import org.sipfoundry.sipxconfig.branch.Branch;
+import org.sipfoundry.sipxconfig.callqueue.CallQueue;
+import org.sipfoundry.sipxconfig.callqueue.CallQueueAgent;
+
 public class CallQueueAgentBean {
     private int m_id;
     private String m_name;
+    private String m_extension;
     private String m_description;
+    private String m_state;
     private String m_extensionStatus;
+    private SettingsList m_settingsList;
     private boolean m_alwaysAvailable;
     private boolean m_useAgentDefaults;
     private boolean m_followCallForwarding;
@@ -31,6 +44,18 @@ public class CallQueueAgentBean {
     }
     public void setDescription(String description) {
         m_description = description;
+    }   
+    public String getExtension() {
+        return m_extension;
+    }
+    public void setExtension(String extension) {
+        m_extension = extension;
+    }
+    public String getState() {
+        return m_state;
+    }
+    public void setState(String state) {
+        m_state = state;
     }
     public String getExtensionStatus() {
         return m_extensionStatus;
@@ -91,5 +116,21 @@ public class CallQueueAgentBean {
     }
     public void setCallTimeout(int callTimeout) {
         m_callTimeout = callTimeout;
-    }    
+    }
+    public SettingsList getSettingsList() {
+        return m_settingsList;
+    }
+    public void setSettingsList(SettingsList settingsList) {
+        m_settingsList = settingsList;
+    }
+    public static CallQueueAgentBean convertQueue(CallQueueAgent callQueueAgent) {
+        CallQueueAgentBean bean = new CallQueueAgentBean();
+        bean.setId(callQueueAgent.getId());
+        bean.setName(callQueueAgent.getName());
+        bean.setExtension(callQueueAgent.getExtension());
+        bean.setDescription(callQueueAgent.getDescription());
+        bean.setState(callQueueAgent.getState());
+        bean.setSettingsList(SettingsList.convertSettingsList(callQueueAgent.getSettings(), Locale.ENGLISH));
+        return bean;
+    }
 }

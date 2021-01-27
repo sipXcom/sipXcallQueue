@@ -13,6 +13,7 @@ import org.sipfoundry.sipxconfig.api.model.SettingsList;
 import org.sipfoundry.sipxconfig.branch.Branch;
 import org.sipfoundry.sipxconfig.branch.BranchManager;
 import org.sipfoundry.sipxconfig.callqueue.CallQueue;
+import org.sipfoundry.sipxconfig.callqueue.CallQueueAgent;
 import org.sipfoundry.sipxconfig.callqueue.CallQueueContext;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -70,15 +71,16 @@ public class CallQueueApiImpl implements CallQueueApi {
 
     @Override
     public Response getAgents() {
-        // TODO Auto-generated method stub
-        return null;
+        Collection<CallQueueAgent> callQueueAgents = m_callQueueContext.getCallQueueAgents();
+        return buildCallQueueAgentsList(callQueueAgents);
     }
 
     @Override
     public Response newAgent(CallQueueAgentBean callQueueAgentBean) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+        CallQueueAgent queueAgent = m_callQueueContext.newCallQueueAgent();
+        convertToCallQueueAgent(callQueueAgentBean, queueAgent);
+        m_callQueueContext.saveCallQueueAgent(queueAgent);
+        return Response.ok().entity(queueAgent.getId()).build();    }
 
     @Override
     public Response getAgent(String name) {
@@ -136,6 +138,39 @@ public class CallQueueApiImpl implements CallQueueApi {
                 }
             }
             callqueue.setLocations(locations);
+        }
+    }
+    
+    private Response buildCallQueueAgentsList(Collection<CallQueueAgent> callQueueAgents) {
+        if (callQueueAgents != null) {
+            return Response.ok().entity(CallQueueAgentList.convertCallQueueAgentList(callQueueAgents)).build();
+        }
+        return Response.status(Status.NOT_FOUND).build();
+    }
+        
+    public void convertToCallQueueAgent(CallQueueAgentBean callqueueAgentBean, CallQueueAgent callqueueAgent) {
+        String name = callqueueAgentBean.getName();
+        if (name != null) {
+            callqueueAgent.setName(name);
+        }
+        
+        String state = callqueueAgentBean.getState();
+        if (state != null) {
+            callqueueAgent.setState(state);
+        }
+        String extension = callqueueAgentBean.getExtension();
+        if (extension != null) {
+            callqueueAgent.setExtension(extension);
+        }
+        String description = callqueueAgentBean.getDescription();
+        if (description != null) {
+            callqueueAgent.setDescription(description);
+        }
+        SettingsList settingsList = callqueueAgentBean.getSettingsList();
+        if (settingsList != null) {
+            for (SettingBean settingBean : settingsList.getSettings()) {
+                callqueueAgent.setSettingValue(settingBean.getPath(), settingBean.getValue());
+            }
         }
     }
     
