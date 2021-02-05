@@ -5,9 +5,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.sipfoundry.sipxconfig.api.impl.ResponseUtils;
 import org.sipfoundry.sipxconfig.api.model.SettingBean;
 import org.sipfoundry.sipxconfig.api.model.SettingsList;
 import org.sipfoundry.sipxconfig.branch.Branch;
@@ -15,6 +17,11 @@ import org.sipfoundry.sipxconfig.branch.BranchManager;
 import org.sipfoundry.sipxconfig.callqueue.CallQueue;
 import org.sipfoundry.sipxconfig.callqueue.CallQueueAgent;
 import org.sipfoundry.sipxconfig.callqueue.CallQueueContext;
+import org.sipfoundry.sipxconfig.callqueue.CallQueueSettings;
+import org.sipfoundry.sipxconfig.callqueue.CallQueueTier;
+import org.sipfoundry.sipxconfig.callqueue.CallQueueTiers;
+import org.sipfoundry.sipxconfig.common.User;
+import org.sipfoundry.sipxconfig.setting.Setting;
 import org.springframework.beans.factory.annotation.Required;
 
 public class CallQueueApiImpl implements CallQueueApi {
@@ -84,20 +91,36 @@ public class CallQueueApiImpl implements CallQueueApi {
 
     @Override
     public Response getAgent(String name) {
-        // TODO Auto-generated method stub
-        return null;
+        CallQueueAgent callQueueAgent = m_callQueueContext.getAgentByName(name);
+        return getAgent(callQueueAgent);
+    }
+    
+    private Response getAgent(CallQueueAgent callQueueAgent) {
+        if (callQueueAgent != null) {
+            return Response.ok().entity(CallQueueAgentBean.convertAgent(callQueueAgent)).build();
+        }
+        return Response.status(Status.NOT_FOUND).build();
     }
 
     @Override
-    public Response updateAgent(String name, CallQueueAgentBean aaBean) {
-        // TODO Auto-generated method stub
-        return null;
+    public Response updateAgent(String name, CallQueueAgentBean agentBean) {
+        CallQueueAgent callQueueAgent = m_callQueueContext.getAgentByName(name);
+        return updateAgent(callQueueAgent, agentBean);
+    }
+    
+    private Response updateAgent(CallQueueAgent callQueueAgent, CallQueueAgentBean callQueueAgentBean) {
+        if (callQueueAgent != null) {
+            convertToCallQueueAgent(callQueueAgentBean, callQueueAgent);
+            m_callQueueContext.saveCallQueueAgent(callQueueAgent);
+            return Response.ok().entity(callQueueAgent.getId()).build();
+        }
+        return Response.status(Status.NOT_FOUND).build();
     }
 
     @Override
     public Response deleteAgent(String name) {
-        // TODO Auto-generated method stub
-        return null;
+        m_callQueueContext.deleteCallQueueAgent(name);
+        return Response.ok().build();
     }
     
     private Response buildCallQueuesList(Collection<CallQueue> callQueues) {
@@ -172,6 +195,15 @@ public class CallQueueApiImpl implements CallQueueApi {
                 callqueueAgent.setSettingValue(settingBean.getPath(), settingBean.getValue());
             }
         }
+        List<CallQueueTierBean> members = callqueueAgentBean.getMembers();
+        if (members != null) {
+            CallQueueTiers tiers = callqueueAgent.getTiers();
+            for (CallQueueTierBean member : members) {
+                CallQueueTier tier = tiers.addTier(member.getQueueId(), callqueueAgent.getId());
+                tier.setLevel(member.getLevel());
+                tier.setPosition(member.getPosition());
+            }
+        }
     }
     
     @Required
@@ -182,5 +214,22 @@ public class CallQueueApiImpl implements CallQueueApi {
     @Required
     public void setBranchManager(BranchManager branchManager) {
         m_branchManager = branchManager;
+    }
+
+    @Override
+    public Response getSettings(HttpServletRequest request) {
+        CallQueueSettings settings = m_callQueueContext.getSettings();
+        return Response.ok().entity(SettingsList.convertSettingsList(settings.getSettings(), request.getLocale())).build();
+    }
+        
+    @Override
+    public Response setSettings(SettingsList settingsList) {
+        List<SettingBean> settingsBean =  settingsList.getSettings();
+        CallQueueSettings cqSettings = m_callQueueContext.getSettings();
+        for (SettingBean bean : settingsBean) {
+            cqSettings.setSettingValue(bean.getPath(), bean.getValue());
+        }
+        m_callQueueContext.saveSettings(cqSettings);
+        return Response.ok().build();
     }
 }

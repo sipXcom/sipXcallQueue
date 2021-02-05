@@ -17,7 +17,7 @@ public class CallQueueAgentList {
         m_callQueueAgents = callQueueAgents;
     }
 
-    @XmlElement(name = "queue")
+    @XmlElement(name = "agent")
     public List<CallQueueAgentBean> getCallQueueAgents() {
         if (m_callQueueAgents == null) {
             m_callQueueAgents = new ArrayList<CallQueueAgentBean>();
@@ -28,7 +28,7 @@ public class CallQueueAgentList {
     public static CallQueueAgentList convertCallQueueAgentList(Collection<CallQueueAgent> callQueueAgentList) {
         List<CallQueueAgentBean> callQueueAgents = new ArrayList<CallQueueAgentBean>();
         for (CallQueueAgent callQueueAgent : callQueueAgentList) {
-            callQueueAgents.add(CallQueueAgentBean.convertQueue(callQueueAgent));
+            callQueueAgents.add(CallQueueAgentBean.convertAgent(callQueueAgent));
         }
         CallQueueAgentList list = new CallQueueAgentList();
         list.setCallQueueAgents(callQueueAgents);

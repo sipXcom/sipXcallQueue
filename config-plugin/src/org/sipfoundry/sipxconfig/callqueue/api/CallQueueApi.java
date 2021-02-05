@@ -1,5 +1,6 @@
 package org.sipfoundry.sipxconfig.callqueue.api;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -8,10 +9,12 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.model.wadl.Description;
+import org.sipfoundry.sipxconfig.api.model.SettingsList;
 
 @Path("/")
 @Produces({
@@ -73,5 +76,16 @@ public interface CallQueueApi {
     
     @Path("agent/{name}")
     @DELETE
-    public Response deleteAgent(@Description("Agent name") @PathParam("name") String name);    
+    public Response deleteAgent(@Description("Agent name") @PathParam("name") String name);
+    
+    @Path("settings")
+    @GET
+    public Response getSettings(@Context HttpServletRequest request);
+
+    @Path("settings")
+    @PUT
+    @Consumes({
+        MediaType.APPLICATION_JSON, MediaType.TEXT_XML, MediaType.APPLICATION_XML
+    })
+    public Response setSettings(@Description("Settings to save") SettingsList settingsList);
 }

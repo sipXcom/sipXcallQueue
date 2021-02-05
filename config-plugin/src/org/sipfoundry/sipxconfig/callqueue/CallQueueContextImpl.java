@@ -264,8 +264,8 @@ public class CallQueueContextImpl extends SipxHibernateDaoSupport implements Cal
         List<CallQueue> queueList = getHibernateTemplate().findByNamedParam(query, "name", name);
 
         return DaoUtils.requireOneOrZero(queueList, query);
-    }    
-
+    }
+    
     public void duplicateCallQueues(Collection<Integer> ids) { // Tested
         for (Integer id : ids) {
             CallQueue srcCallQueue = (CallQueue) getHibernateTemplate().load(CallQueue.class, id);
@@ -362,7 +362,8 @@ public class CallQueueContextImpl extends SipxHibernateDaoSupport implements Cal
         CallQueueAgent callqueueagent = (CallQueueAgent) m_beanFactory.getBean(CallQueueAgent.class);
         return callqueueagent;
     }
-
+    
+    @Override
     public CallQueueAgent getAgentByName(String agentName) {
         List<CallQueueAgent> clients = getHibernateTemplate().findByNamedQueryAndNamedParam(
                 QUERY_CALL_QUEUE_AGENT_WITH_NAME_OR_EXT, QUERY_PARAM_VALUE, agentName);
@@ -396,6 +397,7 @@ public class CallQueueContextImpl extends SipxHibernateDaoSupport implements Cal
         }
         getHibernateTemplate().flush();
         List<Integer> queuesAfter = getCallQueueIds(callQueueAgent.getId());
+        queuesAfter = queuesAfter == null ? new ArrayList<Integer>() : queuesAfter;
         Collection<Integer> queuesToReload = CollectionUtils.union(queuesBefore, queuesAfter);
         m_fsDeployer.deployAgent(callQueueAgent, isNew);
         for (Integer callQueueId : queuesToReload) {
@@ -435,6 +437,14 @@ public class CallQueueContextImpl extends SipxHibernateDaoSupport implements Cal
             m_fsDeployer.deleteAgent(extension);
         }
 
+    }
+    
+    @Override
+    public void deleteCallQueueAgent(String name) {        
+        CallQueueAgent agent = getAgentByName(name);
+        String extension = agent.getExtension();
+        getHibernateTemplate().delete(agent);
+        m_fsDeployer.deleteAgent(extension);
     }
 
     public Collection<CallQueueAgent> getCallQueueAgents() { // Tested

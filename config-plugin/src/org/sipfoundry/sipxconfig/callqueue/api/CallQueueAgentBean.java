@@ -3,30 +3,31 @@ package org.sipfoundry.sipxconfig.callqueue.api;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+
+import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.sipfoundry.sipxconfig.api.model.SettingsList;
-import org.sipfoundry.sipxconfig.branch.Branch;
-import org.sipfoundry.sipxconfig.callqueue.CallQueue;
 import org.sipfoundry.sipxconfig.callqueue.CallQueueAgent;
+import org.sipfoundry.sipxconfig.callqueue.CallQueueTier;
+import org.sipfoundry.sipxconfig.callqueue.CallQueueTiers;
 
+@XmlRootElement(name = "agent")
+@XmlType(propOrder = {
+    "id", "name", "extension", "description", "state", "settingsList"
+    })
+@JsonPropertyOrder({
+    "id", "name", "extension", "description", "state", "settingsList"
+    })
 public class CallQueueAgentBean {
     private int m_id;
     private String m_name;
     private String m_extension;
     private String m_description;
     private String m_state;
-    private String m_extensionStatus;
     private SettingsList m_settingsList;
-    private boolean m_alwaysAvailable;
-    private boolean m_useAgentDefaults;
-    private boolean m_followCallForwarding;
-    private int m_maxNoAnswer;
-    private int m_wrapUpTime;
-    private int m_rejectDelayTime;
-    private int m_busyDelayTime;
-    private int m_noAnswerDelayTime;
-    private int m_callTimeout;
+    private List<CallQueueTierBean> m_members = new ArrayList<CallQueueTierBean>();
     public int getId() {
         return m_id;
     }
@@ -57,73 +58,19 @@ public class CallQueueAgentBean {
     public void setState(String state) {
         m_state = state;
     }
-    public String getExtensionStatus() {
-        return m_extensionStatus;
-    }
-    public void setExtensionStatus(String extensionStatus) {
-        m_extensionStatus = extensionStatus;
-    }
-    public boolean isAlwaysAvailable() {
-        return m_alwaysAvailable;
-    }
-    public void setAlwaysAvailable(boolean alwaysAvailable) {
-        m_alwaysAvailable = alwaysAvailable;
-    }
-    public boolean isUseAgentDefaults() {
-        return m_useAgentDefaults;
-    }
-    public void setUseAgentDefaults(boolean useAgentDefaults) {
-        m_useAgentDefaults = useAgentDefaults;
-    }
-    public boolean isFollowCallForwarding() {
-        return m_followCallForwarding;
-    }
-    public void setFollowCallForwarding(boolean followCallForwarding) {
-        m_followCallForwarding = followCallForwarding;
-    }
-    public int getMaxNoAnswer() {
-        return m_maxNoAnswer;
-    }
-    public void setMaxNoAnswer(int maxNoAnswer) {
-        m_maxNoAnswer = maxNoAnswer;
-    }
-    public int getWrapUpTime() {
-        return m_wrapUpTime;
-    }
-    public void setWrapUpTime(int wrapUpTime) {
-        m_wrapUpTime = wrapUpTime;
-    }
-    public int getRejectDelayTime() {
-        return m_rejectDelayTime;
-    }
-    public void setRejectDelayTime(int rejectDelayTime) {
-        m_rejectDelayTime = rejectDelayTime;
-    }
-    public int getBusyDelayTime() {
-        return m_busyDelayTime;
-    }
-    public void setBusyDelayTime(int busyDelayTime) {
-        m_busyDelayTime = busyDelayTime;
-    }
-    public int getNoAnswerDelayTime() {
-        return m_noAnswerDelayTime;
-    }
-    public void setNoAnswerDelayTime(int noAnswerDelayTime) {
-        m_noAnswerDelayTime = noAnswerDelayTime;
-    }
-    public int getCallTimeout() {
-        return m_callTimeout;
-    }
-    public void setCallTimeout(int callTimeout) {
-        m_callTimeout = callTimeout;
-    }
     public SettingsList getSettingsList() {
         return m_settingsList;
     }
     public void setSettingsList(SettingsList settingsList) {
         m_settingsList = settingsList;
+    }    
+    public List<CallQueueTierBean> getMembers() {
+        return m_members;
     }
-    public static CallQueueAgentBean convertQueue(CallQueueAgent callQueueAgent) {
+    public void setMembers(List<CallQueueTierBean> members) {
+        m_members = members;
+    }
+    public static CallQueueAgentBean convertAgent(CallQueueAgent callQueueAgent) {
         CallQueueAgentBean bean = new CallQueueAgentBean();
         bean.setId(callQueueAgent.getId());
         bean.setName(callQueueAgent.getName());
@@ -131,6 +78,14 @@ public class CallQueueAgentBean {
         bean.setDescription(callQueueAgent.getDescription());
         bean.setState(callQueueAgent.getState());
         bean.setSettingsList(SettingsList.convertSettingsList(callQueueAgent.getSettings(), Locale.ENGLISH));
+        CallQueueTiers tiers = callQueueAgent.getTiers();
+        for (CallQueueTier tier : tiers.getTiers()) {
+            CallQueueTierBean tierBean = new CallQueueTierBean();
+            tierBean.setLevel(tier.getLevel());
+            tierBean.setPosition(tier.getPosition());
+            tierBean.setQueueId(tier.getCallQueueId());
+            bean.getMembers().add(tierBean);
+        }
         return bean;
     }
 }

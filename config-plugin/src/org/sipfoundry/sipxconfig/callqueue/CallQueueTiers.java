@@ -23,11 +23,12 @@ public class CallQueueTiers {
         return m_tiers;
     }
 
-    public void addTier(Integer callQueueId, Integer callQueueAgentId) {
+    public CallQueueTier addTier(Integer callQueueId, Integer callQueueAgentId) {
         CallQueueTier newTier = new CallQueueTier();
         newTier.setCallQueueId(callQueueId);
         newTier.setCallQueueAgentId(callQueueAgentId);
         m_tiers.add(newTier);
+        return newTier;
     }
 
     public void removeFromQueue(Integer callqueueid) {

@@ -6,12 +6,22 @@ import java.util.Locale;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
+import org.codehaus.jackson.annotate.JsonPropertyOrder;
 import org.sipfoundry.sipxconfig.api.model.SettingsList;
 import org.sipfoundry.sipxconfig.branch.Branch;
 import org.sipfoundry.sipxconfig.callqueue.CallQueue;
 
 @XmlRootElement(name = "queue")
+@XmlType(propOrder = {
+    "id", "enabled", "name", "description", "extension", "didNumber", "locations",
+    "settingsList"
+    })
+@JsonPropertyOrder({
+    "id", "enabled", "name", "description", "extension", "didNumber", "locations",
+    "settingsList"
+    })
 public class CallQueueBean {
     private int m_id;
     private boolean m_enabled;
@@ -21,21 +31,6 @@ public class CallQueueBean {
     private String m_extension;
     private String m_didNumber;
     private List<String> m_locations = new ArrayList<String>();
-    private String m_strategy;
-    private String m_welcomeAudio;
-    private String m_goodbyeAudio;
-    private String m_queueAudio;
-    private String m_breakawayDigit;
-    private String m_transferTo;
-    private boolean m_recordCalls;
-    private String m_recordCallsDirectory;
-    private boolean m_applyTierRules;
-    private int m_escalationWait;
-    private boolean m_tierRuleWaitMultiply;
-    private boolean m_tierRuleNoAgentNoWait;
-    private int m_maximumWaitTime;
-    private int m_maximumWaitTimeNoAgent;
-    private int m_maximumWaitTimeNoAgentTimeReached;
     public int getId() {
         return m_id;
     }
@@ -77,97 +72,7 @@ public class CallQueueBean {
     }
     public void setLocations(List<String> locations) {
         m_locations = locations;
-    }
-    public String getStrategy() {
-        return m_strategy;
-    }
-    public void setStrategy(String strategy) {
-        m_strategy = strategy;
-    }
-    public String getWelcomeAudio() {
-        return m_welcomeAudio;
-    }
-    public void setWelcomeAudio(String welcomeAudio) {
-        m_welcomeAudio = welcomeAudio;
-    }
-    public String getGoodbyeAudio() {
-        return m_goodbyeAudio;
-    }
-    public void setGoodbyeAudio(String goodbyeAudio) {
-        m_goodbyeAudio = goodbyeAudio;
-    }
-    public String getQueueAudio() {
-        return m_queueAudio;
-    }
-    public void setQueueAudio(String queueAudio) {
-        m_queueAudio = queueAudio;
-    }
-    public String getBreakawayDigit() {
-        return m_breakawayDigit;
-    }
-    public void setBreakawayDigit(String breakawayDigit) {
-        m_breakawayDigit = breakawayDigit;
-    }
-    public String getTransferTo() {
-        return m_transferTo;
-    }
-    public void setTransferTo(String transferTo) {
-        m_transferTo = transferTo;
-    }
-    public boolean isRecordCalls() {
-        return m_recordCalls;
-    }
-    public void setRecordCalls(boolean recordCalls) {
-        m_recordCalls = recordCalls;
-    }
-    public String getRecordCallsDirectory() {
-        return m_recordCallsDirectory;
-    }
-    public void setRecordCallsDirectory(String recordCallsDirectory) {
-        m_recordCallsDirectory = recordCallsDirectory;
-    }
-    public boolean isApplyTierRules() {
-        return m_applyTierRules;
-    }
-    public void setApplyTierRules(boolean applyTierRules) {
-        m_applyTierRules = applyTierRules;
-    }
-    public int getEscalationWait() {
-        return m_escalationWait;
-    }
-    public void setEscalationWait(int escalationWait) {
-        m_escalationWait = escalationWait;
-    }
-    public boolean isTierRuleWaitMultiply() {
-        return m_tierRuleWaitMultiply;
-    }
-    public void setTierRuleWaitMultiply(boolean tierRuleWaitMultiply) {
-        m_tierRuleWaitMultiply = tierRuleWaitMultiply;
-    }
-    public boolean isTierRuleNoAgentNoWait() {
-        return m_tierRuleNoAgentNoWait;
-    }
-    public void setTierRuleNoAgentNoWait(boolean tierRuleNoAgentNoWait) {
-        m_tierRuleNoAgentNoWait = tierRuleNoAgentNoWait;
-    }
-    public int getMaximumWaitTime() {
-        return m_maximumWaitTime;
-    }
-    public void setMaximumWaitTime(int maximumWaitTime) {
-        m_maximumWaitTime = maximumWaitTime;
-    }
-    public int getMaximumWaitTimeNoAgent() {
-        return m_maximumWaitTimeNoAgent;
-    }
-    public void setMaximumWaitTimeNoAgent(int maximumWaitTimeNoAgent) {
-        m_maximumWaitTimeNoAgent = maximumWaitTimeNoAgent;
-    }
-    public int getMaximumWaitTimeNoAgentTimeReached() {
-        return m_maximumWaitTimeNoAgentTimeReached;
-    }
-    public void setMaximumWaitTimeNoAgentTimeReached(int maximumWaitTimeNoAgentTimeReached) {
-        m_maximumWaitTimeNoAgentTimeReached = maximumWaitTimeNoAgentTimeReached;
-    }   
+    }  
     public SettingsList getSettingsList() {
         return m_settingsList;
     }
